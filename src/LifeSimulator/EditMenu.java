@@ -9,25 +9,28 @@ import java.util.List;
 
 public class EditMenu extends JDialog {
     private JTabbedPane pane;
-    private SpeciesListMenu sem;
+    private SpeciesListMenu slm;
     private AddSpeciesMenu asm;
+    private SpeciesEditMenu sem;
     private ArrayList<Species> toAdd;
 
     public EditMenu() {
         toAdd = new ArrayList<>();
         setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         pane = new JTabbedPane();
-        sem = new SpeciesListMenu();
+        slm = new SpeciesListMenu();
         asm = new AddSpeciesMenu();
-        pane.addTab("Species List", null, new JScrollPane(sem), "Edit a species");
+        sem = new SpeciesEditMenu();
+        pane.addTab("Species", null, new JScrollPane(slm), "List all species");
         pane.addTab("Add Species", null, new JScrollPane(asm), "Add a species");
+        pane.addTab("Edit Species", null, new JScrollPane(sem), "Edit a species");
         add(pane);
         setPreferredSize(new Dimension(400, 300));
         pack();
     }
 
     public void updateSpecies() {
-        sem.updateSpecies();
+        slm.updateSpecies();
     }
 
     public void onSpeciesAdded(Species S) {
@@ -243,6 +246,11 @@ public class EditMenu extends JDialog {
     class EditableSpeciesWrapper extends SpeciesWrapper {
         public EditableSpeciesWrapper(Species S) {
             super(S);
+            name.setEnabled(true);
+            ePlant.setEnabled(true);
+            eAnimal.setEnabled(true);
+            ad.setEnabled(true);
+            de.setEnabled(true);
         }
     }
 }
