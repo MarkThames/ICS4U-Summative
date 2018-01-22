@@ -1,8 +1,6 @@
 package LifeSimulator;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.ArrayList;
+import java.awt.*;
 
 class Species {
 	String name;

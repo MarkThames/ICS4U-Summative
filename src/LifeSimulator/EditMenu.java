@@ -1,11 +1,11 @@
 package LifeSimulator;
 
+import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.border.Border;
 
 public class EditMenu extends JDialog {
     private JTabbedPane pane;
@@ -83,9 +83,7 @@ public class EditMenu extends JDialog {
                         return false;
                     if(mn.getText().isEmpty())
                         return false;
-                    if(mx.getText().isEmpty())
-                        return false;
-                    return true;
+                    return !mx.getText().isEmpty();
                 }
             };
             name.addKeyListener(kl);
@@ -169,10 +167,10 @@ public class EditMenu extends JDialog {
         }
     }
 
-    class SpeciesListMenu extends JPanel implements MenuUpdateListener {
+    class SpeciesEditMenu extends JPanel implements MenuUpdateListener {
         private List<SpeciesWrapper> wrappers;
 
-        public SpeciesListMenu() {
+        public SpeciesEditMenu() {
             wrappers = new ArrayList<>();
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         }
@@ -182,19 +180,8 @@ public class EditMenu extends JDialog {
                 remove(sw);
             wrappers.clear();
             for (Species S : (ArrayList<Species>) Utility.getGlobalObject("Species")) {
-                SpeciesWrapper sw = new SpeciesWrapper(S);
+                EditableSpeciesWrapper sw = new EditableSpeciesWrapper(S);
                 wrappers.add(sw);
-                sw.addMouseListener(new MouseAdapter() {
-                    Border blueBorder = BorderFactory.createLineBorder(Color.BLUE);
-                    @Override
-                    public void mouseClicked(MouseEvent mouseEvent) {
-                        Utility.modifyGlobalObject("To Insert", S);
-                        if(Utility.getGlobalObject("Highlighted SW")!=null)
-                            ((EditMenu.SpeciesWrapper)Utility.getGlobalObject("Highlighted SW")).setBorder(BorderFactory.createEmptyBorder());
-                        Utility.modifyGlobalObject("Highlighted SW",sw);
-                        sw.setBorder(blueBorder);
-                    }
-                });
                 add(sw);
             }
             repaint();
@@ -250,7 +237,12 @@ public class EditMenu extends JDialog {
             add(ad);
             add(new JLabel("Death Age: "));
             add(de);
+        }
+    }
 
+    class EditableSpeciesWrapper extends SpeciesWrapper {
+        public EditableSpeciesWrapper(Species S) {
+            super(S);
         }
     }
 }

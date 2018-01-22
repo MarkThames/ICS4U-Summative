@@ -1,11 +1,10 @@
 package LifeSimulator;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Arrays;
-import java.util.ArrayList;
-
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class Menu extends JFrame implements ActionListener{
 	boolean isMap=false;

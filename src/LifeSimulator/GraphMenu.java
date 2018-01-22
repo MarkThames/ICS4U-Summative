@@ -1,18 +1,10 @@
 package LifeSimulator;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Graphics;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 class GraphMenu extends JFrame implements ActionListener{
 	private Graph current;
@@ -113,8 +105,8 @@ class GraphMenu extends JFrame implements ActionListener{
         	g.setColor(Color.black);
         	g.drawLine(x, y+300, x, y);
         	g.drawLine(x, y+300, x+500, y+300);
-        	int max=(int)(Integer.MIN_VALUE);
-        	int min=(int)(Integer.MAX_VALUE);
+			int max = Integer.MIN_VALUE;
+			int min = Integer.MAX_VALUE;
         	for(int i=0;i<data[0].size();i++){
         		max=Math.max(max, data[0].get(i));
         		min=Math.min(min, data[0].get(i));
@@ -163,8 +155,8 @@ class GraphMenu extends JFrame implements ActionListener{
         	g.drawString("Time (Days)", x+200, y+335);
         	if(two){
         		g.drawLine(x+500, y+300, x+500, y);
-        		max=(int)(Integer.MIN_VALUE);
-            	min=(int)(Integer.MAX_VALUE);
+				max = Integer.MIN_VALUE;
+				min = Integer.MAX_VALUE;
             	for(int i=0;i<data[0].size();i++){
             		max=Math.max(max, data[1].get(i));
             		min=Math.min(min, data[1].get(i));
