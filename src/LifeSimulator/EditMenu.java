@@ -1,27 +1,25 @@
 package LifeSimulator;
 
-import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.Border;
 
 public class EditMenu extends JDialog {
     private JTabbedPane pane;
     private SpeciesListMenu slm;
     private AddSpeciesMenu asm;
     private SpeciesEditMenu sem;
-    private ArrayList<Species> toAdd;
 
     public EditMenu() {
-        toAdd = new ArrayList<>();
         setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
         pane = new JTabbedPane();
         slm = new SpeciesListMenu();
         asm = new AddSpeciesMenu();
         sem = new SpeciesEditMenu();
-        pane.addTab("Species", null, new JScrollPane(slm), "List all species");
+        pane.addTab("Species List", null, new JScrollPane(slm), "List all species");
         pane.addTab("Add Species", null, new JScrollPane(asm), "Add a species");
         pane.addTab("Edit Species", null, new JScrollPane(sem), "Edit a species");
         add(pane);
@@ -31,12 +29,9 @@ public class EditMenu extends JDialog {
 
     public void updateSpecies() {
         slm.updateSpecies();
+        sem.updateSpecies();
     }
 
-    public void onSpeciesAdded(Species S) {
-        ((ArrayList<Species>) Utility.getGlobalObject("Species")).add(S);
-        Utility.incrementGlobalCounter("Species");
-    }
 
     class AddSpeciesMenu extends JPanel {
     	private final Color[] colours={Color.cyan,Color.magenta,Color.orange,Color.pink,Color.red,Color.white};
@@ -68,6 +63,7 @@ public class EditMenu extends JDialog {
                     ((ArrayList<Species>) Utility.getGlobalObject("Species")).add(new Species(name.getText(), colours[color.getSelectedIndex()], Integer.parseInt(ad.getText()), Integer.parseInt(de.getText()), ePlant.isSelected(), eAnimal.isSelected(), Utility.getGlobalCounter("Species"), Integer.parseInt(mn.getText()), Integer.parseInt(mx.getText()), 2.0));
                     clear();
                     Utility.incrementGlobalCounter("Species");
+ 
                     updateSpecies();
                 }
             });
@@ -86,7 +82,9 @@ public class EditMenu extends JDialog {
                         return false;
                     if(mn.getText().isEmpty())
                         return false;
-                    return !mx.getText().isEmpty();
+                    if(mx.getText().isEmpty())
+                        return false;
+                    return true;
                 }
             };
             name.addKeyListener(kl);
@@ -169,7 +167,7 @@ public class EditMenu extends JDialog {
             updateSpecies();
         }
     }
-
+    
     class SpeciesEditMenu extends JPanel implements MenuUpdateListener {
         private List<SpeciesWrapper> wrappers;
 
@@ -183,7 +181,7 @@ public class EditMenu extends JDialog {
                 remove(sw);
             wrappers.clear();
             for (Species S : (ArrayList<Species>) Utility.getGlobalObject("Species")) {
-                EditableSpeciesWrapper sw = new EditableSpeciesWrapper(S);
+                SpeciesEditWrapper sw = new SpeciesEditWrapper(S);
                 wrappers.add(sw);
                 add(sw);
             }
@@ -240,17 +238,59 @@ public class EditMenu extends JDialog {
             add(ad);
             add(new JLabel("Death Age: "));
             add(de);
+
         }
     }
+    
+    class SpeciesEditWrapper extends SpeciesWrapper {
 
-    class EditableSpeciesWrapper extends SpeciesWrapper {
-        public EditableSpeciesWrapper(Species S) {
-            super(S);
-            name.setEnabled(true);
+    	JButton confirm;
+        public SpeciesEditWrapper(Species sp) {
+        	super(sp);
+            name.setEditable(true);
             ePlant.setEnabled(true);
             eAnimal.setEnabled(true);
-            ad.setEnabled(true);
-            de.setEnabled(true);
+            ad.setEditable(true);
+            de.setEditable(true);
+            confirm = new JButton("Edit");
+            confirm.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                	((ArrayList<Species>) Utility.getGlobalObject("Species")).get(((ArrayList<Species>) Utility.getGlobalObject("Species")).indexOf(sp)).update(name.getText(), Integer.parseInt(ad.getText()), Integer.parseInt(de.getText()), ePlant.isSelected(), eAnimal.isSelected());
+                    clear();
+ 
+                    updateSpecies();
+                }
+            });
+            add(confirm);
+            KeyAdapter kl = new KeyAdapter() {
+                @Override
+                public void keyReleased(KeyEvent keyEveent) {
+                    confirm.setEnabled(isValidInput());
+                }
+
+                private boolean isValidInput(){
+                    if(name.getText().isEmpty())
+                        return false;
+                    if(ad.getText().isEmpty())
+                        return false;
+                    if(de.getText().isEmpty())
+                        return false;
+                    return true;
+                }
+            };
+            name.addKeyListener(kl);
+            ad.addKeyListener(kl);
+            de.addKeyListener(kl);
+        }
+
+        private void clear(){
+            name.setText("");
+            ePlant.setSelected(false);
+            eAnimal.setSelected(false);
+            ad.setText("");
+            de.setText("");
+            confirm.setEnabled(false);
         }
     }
 }
