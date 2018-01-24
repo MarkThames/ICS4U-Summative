@@ -1,6 +1,8 @@
 package LifeSimulator;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.ArrayList;
 
 class Species {
 	String name;
@@ -26,4 +28,11 @@ class Species {
 		strng=strength;
 	}
 
+	public void update(String str, int ad, int de, boolean pl, boolean an) {
+		name=str;
+		adultAge = ad;
+		deathAge = de;
+		eatPlants = pl;
+		eatAnimals = an;
+	}
 }
