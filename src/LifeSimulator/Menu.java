@@ -1,10 +1,11 @@
 package LifeSimulator;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.util.Arrays;
 import java.util.ArrayList;
+
+import javax.swing.*;
 
 public class Menu extends JFrame implements ActionListener{
 	boolean isMap=false;
@@ -14,17 +15,17 @@ public class Menu extends JFrame implements ActionListener{
 		Utility.addGlobalObject("Species", new ArrayList<Species>());
 		Utility.addGlobalObject("To Insert", null);
         Utility.addGlobalObject("Highlighted SW", null);
-		Utility.newGlobalCounter("Species",2);
+		Utility.newGlobalCounter("Species", 0);
 		menu = new EditMenu();
 		JPanel content=new JPanel(new GridLayout());
-		JButton world=new JButton("Map");
+		JButton map=new JButton("Map");
 		JButton graph=new JButton("Data");
 		JButton edit=new JButton("Edit");
 		JButton info=new JButton("Info");
-		world.addActionListener(this);
+		map.addActionListener(this);
 		graph.addActionListener(this);
 		edit.addActionListener(this);
-		content.add(world);
+		content.add(map);
 		content.add(graph);
 		content.add(edit);
 		content.add(info);
@@ -35,18 +36,30 @@ public class Menu extends JFrame implements ActionListener{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+        world=new Island();
+		world.addWindowListener(new WindowAdapter() {
+		    @Override
+		    public void windowClosing(WindowEvent e) {
+		        // handle closing the window
+		        world.setVisible(false);
+		        world.dispose();
+		        world.pause();
+		    }
+		});
 	}
 	public static void main(String[] args) {
 		Menu demo=new Menu();
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if(e.getActionCommand().equals("Map")&&!isMap){
-			world=new Island();
-			isMap=true;
+		if(e.getActionCommand().equals("Map")){
+			if(!world.isVisible()){
+		    	world.setVisible(true);
+		    }
 		}
 		if(e.getActionCommand().equals("Data")){
-			GraphMenu demo=new GraphMenu();
+			GraphMenu demo=new GraphMenu(world.island.getData());
+			
 		}
         if(e.getActionCommand().equals("Edit")){
             menu.setVisible(true);
