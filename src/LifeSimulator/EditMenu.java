@@ -14,7 +14,7 @@ public class EditMenu extends JDialog {
     private SpeciesEditMenu sem;
 
     public EditMenu() {
-        setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         pane = new JTabbedPane();
         slm = new SpeciesListMenu();
         asm = new AddSpeciesMenu();
@@ -126,10 +126,24 @@ public class EditMenu extends JDialog {
 
     class SpeciesListMenu extends JPanel implements MenuUpdateListener {
         private List<SpeciesWrapper> wrappers;
-
+        private JComboBox tool;
         public SpeciesListMenu() {
             wrappers = new ArrayList<>();
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        	String[] options={"---", "Single Spawn", "Mass Spawn", "Delete"};
+        	tool=new JComboBox(options);
+        	tool.setMaximumSize(tool.getPreferredSize());
+        	tool.addActionListener (new ActionListener () {
+        	    public void actionPerformed(ActionEvent e) {
+        	        
+        	    }
+        	});
+        	JPanel pane=new JPanel();
+        	pane.setMinimumSize(new Dimension(50000, 50));
+        	pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
+        	pane.setAlignmentX(Component.LEFT_ALIGNMENT);
+            this.add(pane);
+            pane.add(tool);
         }
 
         protected void updateSpecies() {
