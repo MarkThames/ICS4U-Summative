@@ -53,8 +53,6 @@ class GraphMenu extends JFrame implements ActionListener{
         setDefaultCloseOperation (JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo (null);
         setVisible(true);
-        
-		//displayGraph(meh, meh2);
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
