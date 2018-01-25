@@ -163,12 +163,16 @@ public class EditMenu extends JDialog {
             // Initalize everything
             wrappers = new ArrayList<>();
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        	String[] options={"---", "Single Spawn", "Mass Spawn", "Delete"};
+        	String[] options={"---", "Single Spawn", "Mass Spawn", "Eradicate"};
         	tool=new JComboBox(options);
         	tool.setMaximumSize(tool.getPreferredSize());
         	tool.addActionListener (new ActionListener () {
         	    public void actionPerformed(ActionEvent e) {
-        	        
+        	    	tool.addActionListener (new ActionListener () {
+                	    public void actionPerformed(ActionEvent e) {
+                	        Utility.modifyGlobalObject("mouseType", tool.getSelectedIndex());
+                	    }
+                	});
         	    }
         	});
         	JPanel pane=new JPanel();
@@ -384,7 +388,7 @@ public class EditMenu extends JDialog {
                     }catch(NumberFormatException ex){
                         return false;
                     }
-                    return true;
+                    //return true;
                 }
             };
             // Add the keylistener
