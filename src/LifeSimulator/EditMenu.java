@@ -1,17 +1,17 @@
 package LifeSimulator;
 
+import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.border.Border;
 
 // The menu that displays the edit options
 public class EditMenu extends JDialog {
     // JTabbedPane for displaying tabs
     private JTabbedPane pane;
-    // The following 3 varibles all extend JPanel
+    // The following 3 variables all extend JPanel
     // They are used to display the information
     // And are added to the JTabbedPane
     private SpeciesListMenu slm;
@@ -37,7 +37,7 @@ public class EditMenu extends JDialog {
         pack();
     }
 
-    // Here just for convience
+    // Here just for convenience
     // Updates the species lists
     public void updateSpecies() {
         slm.updateSpecies();

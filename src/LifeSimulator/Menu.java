@@ -1,13 +1,14 @@
 package LifeSimulator;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Arrays;
-import java.util.ArrayList;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ArrayList;
 
 public class Menu extends JFrame implements ActionListener, ChangeListener{
 	boolean isMap=false;
@@ -20,7 +21,7 @@ public class Menu extends JFrame implements ActionListener, ChangeListener{
         Utility.addGlobalObject("Highlighted SW", null);
 		Utility.newGlobalCounter("Species", 0);
 		menu = new EditMenu();
-		JPanel content=new JPanel(new GridLayout(2, 1));
+		JPanel menuContent = new JPanel(new GridLayout(2, 1));
 		JPanel top=new JPanel(new GridLayout(1, 3));
 		JPanel bot=new JPanel(new GridLayout(1, 2));
 		JPanel botl=new JPanel(new GridLayout(1, 2));
@@ -48,9 +49,9 @@ public class Menu extends JFrame implements ActionListener, ChangeListener{
 		botr.add(spd);
 		bot.add(botl);
 		bot.add(botr);
-		content.add(top);
-		content.add(bot);
-		setContentPane (content);
+		menuContent.add(top);
+		menuContent.add(bot);
+		setContentPane(menuContent);
         pack();
         setTitle ("Menu");
         setSize(400, 80);
