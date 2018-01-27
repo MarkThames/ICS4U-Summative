@@ -17,16 +17,21 @@ import javax.swing.JPanel;
 class GraphMenu extends JFrame implements ActionListener{
 	private Graph current;
 	private JPanel content;
+	//choose what species to display
 	private JComboBox s1, s2;
 	private JButton create;
+	//names of species
 	private String[] species;
 	private Color[] col;
+	//all data
 	private ArrayList<Integer>[] data;
 	public GraphMenu(ArrayList<Integer>[] arr){
+		//gain data
 		data=arr;
 		setPreferredSize(new Dimension(700, 500));
 		content=new JPanel();
 		content.setLayout(new FlowLayout());
+		//empty
 		current=new Graph(new ArrayList<Integer>(), Color.black);
 		ArrayList<Species>list =((ArrayList<Species>) Utility.getGlobalObject("Species"));
 		species=new String[list.size()+1];
@@ -42,6 +47,8 @@ class GraphMenu extends JFrame implements ActionListener{
 		
 		create=new JButton("Go!");
 		create.addActionListener(this);
+		
+		//add components
 		content.add(s1, "North");
 		content.add(s2, "North");
 		content.add(create, "North");
@@ -56,6 +63,7 @@ class GraphMenu extends JFrame implements ActionListener{
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		//display species selected
 		if(e.getActionCommand().equals("Go!")){
 			if(s1.getSelectedIndex()==0){
 				if(s2.getSelectedIndex()!=0){
@@ -66,6 +74,7 @@ class GraphMenu extends JFrame implements ActionListener{
 			else displayGraph(data[s1.getSelectedIndex()-1], data[s2.getSelectedIndex()-1], col[s1.getSelectedIndex()], col[s2.getSelectedIndex()]);
 		}
 	}
+	//display graph
 	public void displayGraph(ArrayList<Integer> data1, Color c1){
 		content.remove(current);
 		current=new Graph(data1, c1);
@@ -73,6 +82,7 @@ class GraphMenu extends JFrame implements ActionListener{
 		setContentPane(content);
 		repaint();
 	}
+	//display graph
 	public void displayGraph(ArrayList<Integer> data1, ArrayList<Integer> data2, Color c1, Color c2){
 		content.remove(current);
 		current=new Graph(data1, data2, c1, c2);
