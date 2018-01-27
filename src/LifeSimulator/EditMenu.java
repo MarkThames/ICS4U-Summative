@@ -54,8 +54,10 @@ public class EditMenu extends JDialog {
         // JComboBox to display colours, decided not to use JColourChooser since certain colours (e.g. blue)
         // would conflict with the map
         protected JComboBox<String>color;
-        // JTextFields to enter name, adult age, death age, minimum size, and maximum size, respectively
-        protected JTextField name, ad, de, mn, mx;
+        // JComboBox to give options for size and strength
+        protected JComboBox size, strength;
+        // JTextFields to enter name
+        protected JTextField name;
         // JButton to confirm choices
         protected JButton confirm;
 
@@ -69,18 +71,18 @@ public class EditMenu extends JDialog {
             // Initalize checkboxes, text fields, and combo box
             ePlant = new JCheckBox();
             eAnimal = new JCheckBox();
-            ad = new JTextField(10);
+            String[] sizeOptions={"Small", "Medium", "Large"};
+            size=new JComboBox(sizeOptions);
             color = new JComboBox(colourNames);
-            de = new JTextField(10);
-            mn = new JTextField(10);
-            mx = new JTextField(10);
+            String[] strengthOptions={"Weak", "Fair", "Strong"};
+            strength=new JComboBox(strengthOptions);
             confirm = new JButton("Add");
             // Check if clicked
             confirm.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
                     // Add a new species in
-                    ((ArrayList<Species>) Utility.getGlobalObject("Species")).add(new Species(name.getText(), colours[color.getSelectedIndex()], Integer.parseInt(ad.getText()), Integer.parseInt(de.getText()), ePlant.isSelected(), eAnimal.isSelected(), Utility.getGlobalCounter("Species"), Integer.parseInt(mn.getText()), Integer.parseInt(mx.getText()), 2.0));
+                    ((ArrayList<Species>) Utility.getGlobalObject("Species")).add(new Species(name.getText(), colours[color.getSelectedIndex()], 50, 200, ePlant.isSelected(), eAnimal.isSelected(), Utility.getGlobalCounter("Species"), size.getSelectedIndex(), strength.getSelectedIndex()));
                     // Clear the textboxes and checkboxes
                     clear();
                     Utility.incrementGlobalCounter("Species");
@@ -88,7 +90,8 @@ public class EditMenu extends JDialog {
                     updateSpecies();
                 }
             });
-            // This is to validate input, so that we don't throw a NumberFormatException when `Add` is clicked
+            confirm.setEnabled(false);
+            //validate input
             KeyAdapter kl = new KeyAdapter() {
                 @Override
                 public void keyReleased(KeyEvent keyEveent) {
@@ -99,25 +102,11 @@ public class EditMenu extends JDialog {
                 private boolean isValidInput(){
                     if(name.getText().isEmpty())
                         return false;
-                    // Ensure numeric fields have numbers
-                    try{
-                        Integer.parseInt(ad.getText());
-                        Integer.parseInt(de.getText());
-                        Integer.parseInt(mn.getText());
-                        Integer.parseInt(mx.getText());
-                    }catch(NumberFormatException ex){
-                        return false;
-                    }
                     return true;
                 }
             };
             // Add the keylistener
             name.addKeyListener(kl);
-            ad.addKeyListener(kl);
-            de.addKeyListener(kl);
-            mn.addKeyListener(kl);
-            mx.addKeyListener(kl);
-            confirm.setEnabled(false);
             // Add everything to the pane, including JLabels to explain each field
             pane.add(new JLabel("Name: "));
             pane.add(name);
@@ -127,14 +116,10 @@ public class EditMenu extends JDialog {
             pane.add(ePlant);
             pane.add(new JLabel("Eats Animals: "));
             pane.add(eAnimal);
-            pane.add(new JLabel("Adult Age: "));
-            pane.add(ad);
-            pane.add(new JLabel("Death Age: "));
-            pane.add(de);
-            pane.add(new JLabel("Minimum Size: "));
-            pane.add(mn);
-            pane.add(new JLabel("Maximum Size: "));
-            pane.add(mx);
+            pane.add(new JLabel("Size: "));
+            pane.add(size);
+            pane.add(new JLabel("Strength: "));
+            pane.add(strength);
             pane.add(confirm);
             add(pane);
         }
@@ -144,10 +129,8 @@ public class EditMenu extends JDialog {
             name.setText("");
             ePlant.setSelected(false);
             eAnimal.setSelected(false);
-            ad.setText("");
-            de.setText("");
-            mn.setText("");
-            mx.setText("");
+            size.setEnabled(false);
+            strength.setEnabled(false);
             confirm.setEnabled(false);
         }
     }
@@ -292,8 +275,9 @@ public class EditMenu extends JDialog {
         // Whether it eats plants or animals
         protected JCheckBox ePlant, eAnimal;
         // Text fields to display textual information
-        protected JTextField name, ad, de;
-
+        protected JTextField name;
+        // JComboBoxes to display size and strength
+        protected JComboBox size, strength;
         // Constructor
         public SpeciesWrapper(Species sp) {
             // This effectively constrains the maximum height so that it looks more attractive
@@ -313,12 +297,15 @@ public class EditMenu extends JDialog {
             eAnimal.setEnabled(false);
             // Display color
             colDisplay = new JLabel("", col, JLabel.CENTER);
-            // Display age-related information
-            ad = new JTextField(String.valueOf(S.adultAge), 10);
-            ad.setEditable(false);
-            de = new JTextField(String.valueOf(S.deathAge), 10);
-            de.setEditable(false);
-
+            // Display size-related information
+            String[] sizeOptions={"Small", "Medium", "Large"};
+            size=new JComboBox(sizeOptions);
+            String[] strengthOptions={"Weak", "Fair", "Strong"};
+            strength=new JComboBox(strengthOptions);
+            size.setSelectedIndex(sp.t1);
+            strength.setSelectedIndex(sp.t2);
+            size.setEnabled(false);
+            strength.setEnabled(false);
             // Add everything to the JPanel
             add(new JLabel("Name: "));
             add(name);
@@ -328,10 +315,10 @@ public class EditMenu extends JDialog {
             add(ePlant);
             add(new JLabel("Eats Animals: "));
             add(eAnimal);
-            add(new JLabel("Adult Age: "));
-            add(ad);
-            add(new JLabel("Death Age: "));
-            add(de);
+            add(new JLabel("Size: "));
+            add(size);
+            add(new JLabel("Strength: "));
+            add(strength);
 
         }
     }
@@ -349,8 +336,8 @@ public class EditMenu extends JDialog {
             name.setEditable(true);
             ePlant.setEnabled(true);
             eAnimal.setEnabled(true);
-            ad.setEditable(true);
-            de.setEditable(true);
+            size.setEnabled(true);
+            strength.setEnabled(true);
             // Add a the button the confirm
             confirm = new JButton("Edit");
             // Listen for a click
@@ -359,7 +346,7 @@ public class EditMenu extends JDialog {
                 // *clicks*
                 public void actionPerformed(ActionEvent actionEvent) {
                     // Modify the old species object
-                	((ArrayList<Species>) Utility.getGlobalObject("Species")).get(((ArrayList<Species>) Utility.getGlobalObject("Species")).indexOf(sp)).update(name.getText(), Integer.parseInt(ad.getText()), Integer.parseInt(de.getText()), ePlant.isSelected(), eAnimal.isSelected());
+                	((ArrayList<Species>) Utility.getGlobalObject("Species")).get(((ArrayList<Species>) Utility.getGlobalObject("Species")).indexOf(sp)).update(name.getText(), 50, 200, ePlant.isSelected(), eAnimal.isSelected(), size.getSelectedIndex(), strength.getSelectedIndex());
                     // Clear the text fields
                     clear();
                     // Update the two menus
@@ -380,21 +367,11 @@ public class EditMenu extends JDialog {
                 private boolean isValidInput(){
                     if(name.getText().isEmpty())
                         return false;
-                    try{
-                        // Prevent a NumberFormatException
-                        Integer.parseInt(ad.getText());
-                        Integer.parseInt(de.getText());
-                        return true;
-                    }catch(NumberFormatException ex){
-                        return false;
-                    }
-                    //return true;
+                    return true;
                 }
             };
             // Add the keylistener
             name.addKeyListener(kl);
-            ad.addKeyListener(kl);
-            de.addKeyListener(kl);
         }
 
         // Helper method to clear all fields
@@ -402,8 +379,8 @@ public class EditMenu extends JDialog {
             name.setText("");
             ePlant.setSelected(false);
             eAnimal.setSelected(false);
-            ad.setText("");
-            de.setText("");
+            size.setEnabled(false);
+            strength.setEnabled(false);
             confirm.setEnabled(false);
         }
     }
