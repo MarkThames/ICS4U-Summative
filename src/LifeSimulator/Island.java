@@ -27,7 +27,7 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
         JPanel botr = new JPanel(new GridLayout(1, 1));
         JButton graph = new JButton("Data");
         JButton edit = new JButton("Edit");
-        JButton info = new JButton("Info");
+        JButton info = new JButton("Help");
         JButton start = new JButton("Start");
         JButton pause = new JButton("Pause");
         spd = new JSlider();
@@ -39,7 +39,7 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
         pause.addActionListener(this);
         top.add(graph);
         top.add(edit);
-        //top.add(info);
+        top.add(info);
         botl.add(start);
         botl.add(pause);
         botr.add(spd);
@@ -53,17 +53,16 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
 		content.setLayout(new BorderLayout());
         content.add(menuContent, "North");
         content.add(island, "Center");
-		//content.add(idk);
 		setContentPane (content);
         pack ();
         setTitle ("World");
-        setSize (515, 535);
-        setMaximumSize(new Dimension(515,535));
+        setSize (515, 590);
+        setMaximumSize(new Dimension(515,590));
         GraphicsEnvironment ge=GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice defaultScreen=ge.getDefaultScreenDevice();
         Rectangle rect=defaultScreen.getDefaultConfiguration().getBounds();
         int x = ((int)rect.getMaxX() - this.getWidth())/2;
-        int y = 150;
+        int y = 50;
         setLocation(x, y);
         t=new Timer(50, this);
         mouse=new myMouseAdapter();
@@ -85,17 +84,20 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
 	}
 	private void makeSpecies(){
 		Utility.incrementGlobalCounter("Species", 2);
-		((ArrayList<Species>)Utility.getGlobalObject("Species")).add(new Species("Mouse", Color.red, 50, 200, true, false, 0, 3, 4, 2.0));
-		((ArrayList<Species>)Utility.getGlobalObject("Species")).add(new Species("Cat", Color.magenta, 100, 400, false, true, 1, 5, 7, 10.0));
+		((ArrayList<Species>)Utility.getGlobalObject("Species")).add(new Species("Mouse", Color.red, 50, 200, true, false, 0, 0, 0));
+		((ArrayList<Species>)Utility.getGlobalObject("Species")).add(new Species("Cat", Color.magenta, 50, 200, false, true, 1, 1, 1));
 	}
 	public ArrayList<Integer>[] getData(){
 		return island.getData();
+	}
+	public Map getMap(){
+		return island.getMap();
 	}
 	public void start(){
 		t.start();
 	}
 	public void pause(){
-		t.stop();
+		if(t.isRunning())t.stop();
 	}
 	public void changeSpeed(int val){
 		t.setDelay(val);
@@ -113,6 +115,10 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
             }
             if (e.getActionCommand().equals("Edit")) {
                 menu.setVisible(true);
+            }
+            if (e.getActionCommand().equals("Help")) {
+            	Help help=new Help();
+            	help.setVisible(true);
             }
             if (e.getActionCommand().equals("Start")) {
                 start();
@@ -132,16 +138,15 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
 		
 		//scroll to zoom towards/from a point
 		public void mouseWheelMoved(MouseWheelEvent e){
-			island.changeZoom(0.1*e.getPreciseWheelRotation(), e.getX()-8, e.getY()-28);
+			island.changeZoom(0.1*e.getPreciseWheelRotation(), e.getX()-8, e.getY()-80);
 		}
 		
-		public void mouseClicked(MouseEvent e) {
-			
+		public void mouseClicked(MouseEvent e) {	
 			Species S = (Species)Utility.getGlobalObject("To Insert");
 			int type=(int) Utility.getGlobalObject("mouseType");
             if(S!=null&&SwingUtilities.isRightMouseButton(e)&&type==1){
             	//add animal at point clicked
-                island.addAnimal(S, e.getX()-8, e.getY()-28);
+                island.addAnimal(S, e.getX()-8, e.getY()-80);
             }
 		}
 
@@ -179,7 +184,7 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
 			if(S!=null&&SwingUtilities.isRightMouseButton(e)&&(type==2||type==3)){
 				int x=e.getX();
 				int y=e.getY();
-				island.select(sX-8, sY-28, x-8, y-28);
+				island.select(sX-8, sY-80, x-8, y-80);
 			}
 		}
 
@@ -189,7 +194,7 @@ public class Island extends JFrame implements ActionListener, ChangeListener{
 			if(S!=null&&SwingUtilities.isRightMouseButton(e)&&(type==2||type==3)){
 				int x=e.getX();
 				int y=e.getY();
-				island.select(sX-8, sY-28, x-8, y-28);
+				island.select(sX-8, sY-80, x-8, y-80);
 				if(type==2){
 					island.massSpawn(S);
 				}
@@ -260,6 +265,10 @@ class IslandLife extends JPanel{
 			temp[i]=new ArrayList<Integer>(pop[i]);
 		}
 		return temp;
+	}
+	
+	public Map getMap(){
+		return m;
 	}
 	
 	//adds new animal to world at specific point
@@ -492,6 +501,9 @@ class IslandLife extends JPanel{
 		    colB=sp.c.getBlue();
 		    
 		    id=i;
+		    
+		    maxEnergy=100*Math.sqrt(sp.strng);
+		    energy=maxEnergy;
 		}
 		
 		//assign the animal a random age
@@ -593,7 +605,7 @@ class IslandLife extends JPanel{
 		//check if it can eat an animal n
 		private boolean delicious(Animal n){
 			if(!(sp).eatAnimals)return false;
-			if(!(n.sp).eatPlants)return false;
+			if(n.sp.id==sp.id)return false;
             return getSize() > n.getSize();
         }
 		
@@ -759,8 +771,8 @@ class IslandLife extends JPanel{
 					dirX=locX-posX;
 					dirY=locY-posY;
 					double ang=angle(dirX, dirY);
-					dirX=Math.max((80.0-3.0*closest), 20.0)*Math.cos(ang);
-					dirY=Math.max((80.0-3.0*closest), 20.0)*Math.sin(ang);
+					dirX=Math.max((80.0-3.0*closest), 20.0)*Math.cos(ang)/5;
+					dirY=Math.max((80.0-3.0*closest), 20.0)*Math.sin(ang)/5;
 					return 5;
 				}
 			}
@@ -813,9 +825,9 @@ class IslandLife extends JPanel{
 				movY=0;
 				
 				//colour fades to black
-				colR=0*0.001+colR*0.99;
-				colG=0*0.001+colG*0.99;
-				colB=0*0.001+colB*0.99;
+				colR=0*0.02+colR*0.98;
+				colG=0*0.02+colG*0.98;
+				colB=0*0.02+colB*0.98;
 				
 				//disappear when dead for long enough
 				if((int)(colR)<40&&(int)(colG)<40&&(int)(colB)<40)gone=true;
@@ -964,8 +976,8 @@ class IslandLife extends JPanel{
 				val1.add(movX);
 				val2.add(dirY);
 				val2.add(movY);
-				wgt.add(1.0);
-				wgt.add(50.0);
+				wgt.add(Math.sqrt(sp.strng));
+				wgt.add(200.0);
 				
 				//change movement
 				changeVelocity(avg(val1, wgt), avg(val2, wgt));
@@ -1052,7 +1064,7 @@ class IslandLife extends JPanel{
 					val1.add(dx);
 					val2.add(dy);
 					if(closest>2)wgt.add(0.05);
-					else wgt.add(5.0);
+					else wgt.add(10.0);
 					changeVelocity(avg(val1, wgt), avg(val2, wgt));
 					changeVelocity2(angle(movX, movY), speed/2.0);
 				}
@@ -1136,12 +1148,13 @@ class IslandLife extends JPanel{
 		//draw the animal
 		public void draw(Graphics G){
 		    Color tmp=G.getColor();
-		    G.setColor(new Color((int)colR, (int)colG, (int)colB));
 		    
-		    int radius=(int)(getSize()*zoom);
+		    int radius=(int)(getSize()*zoom*1.5);
 		    double x=(int)((posX-shiftX)*zoom)-radius/2.0;
 	    	double y=(int)((posY-shiftY)*zoom)-radius/2.0;
+	    	G.setColor(new Color((int)colR, (int)colG, (int)colB));
 		    G.fillOval((int)(x), (int)(y), radius, radius);
+		    
 		    G.setColor(tmp);
 		}
 	}
